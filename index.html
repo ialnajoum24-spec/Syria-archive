@@ -303,10 +303,8 @@
     </div>
 
     <script>
-        // 🔗 الرابط الخاص بك مدمج وجاهز للعمل مباشرة
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqItHb4CAVLrG5FdjUoJ7nCQ56N91F4HwbcyWw-bcRVHchWJADyUP1vEU1iACs4rYN/exec";
 
-        // تم تنظيف كافة الأسماء والمسافات العشوائية هنا بالكامل لضمان تعبئة الشيتات بشكل صحيح
         const sheetStructures = {
             "سجل الحركة": ["مسؤول البحث", "عنوان البحث", "نوع المسار البحثي", "رابط ملف العمل", "اسم ملف العمل"],
             "أحداث مفصلية في الثورة": ["مسؤول البحث", "اسم محور البحث", "عنوان البحث", "رمز العنوان الفرعي", "المصادر", "تحميل ملفات العمل", "الكود", "مسؤول التدقيق الثاني", "حالة التدقيق الثاني"],
@@ -321,6 +319,21 @@
             "كتب ونصوص": ["اسم الباحث", "العنوان", "المؤلف او الناشر", "الموضوع", "التاريخ", "تحميل ملف العمل", "اسم الملف"],
             "قصص": ["اسم الباحث", "عنوان القصة", "الموضوع", "الشاهد", "التاريخ", "تحميل ملف العمل", "اسم الملف"]
         };
+
+        // قائمة الباحثين المحددة من قبلك
+        const researchersList = [
+            "حمد محمود الشايب", "عماد حسام الدين قباني", "محمد عاطف نموس", "يوسف صلاح الدين الشايب",
+            "منصور ممدوح حسين", "حسان عصام الشايب", "محمد ملاك غياث الدين قباني", "محمد نور رياض المعرباني",
+            "بلال سعيد الحريري", "عبد الرحمن محمود النموس", "مهند علي اللوباني", "محمد اياد ياسين صوان",
+            "معد حسن الطالب", "إبراهيم أحمد النجوم", "توفيق عبدالله الشيخ علي الشيوخ الصيادي",
+            "محمد ضياء أحمد بركات", "حازم موسى السلامة"
+        ];
+
+        // قائمة المحافظات السورية
+        const syrianGovernates = [
+            "دمشق", "ريف دمشق", "حلب", "حمص", "حماة", "اللاذقية", "طرطوس", 
+            "إدلب", "دير الزور", "الرقة", "الحسكة", "درعا", "السويداء", "القنيطرة"
+        ];
 
         let currentUserEmail = "";
 
@@ -374,7 +387,38 @@
                 label.innerText = field;
                 
                 let input;
-                if(field.includes('ملخص') || field.includes('الأطراف') || field.includes('المصادر')) {
+                
+                // 1. فحص حقل الباحث / المسؤول وتحويله لقائمة منسدلة
+                if(field === "مسؤول البحث" || field === "اسم الباحث" || field === "اسم الباحث ") {
+                    input = document.createElement('select');
+                    const defaultOpt = document.createElement('option');
+                    defaultOpt.value = ""; defaultOpt.innerText = "اختر اسم الباحث...";
+                    input.appendChild(defaultOpt);
+                    researchersList.forEach(name => {
+                        const opt = document.createElement('option');
+                        opt.value = name; opt.innerText = name;
+                        input.appendChild(opt);
+                    });
+                } 
+                // 2. فحص حقل المحافظة وتحويله لقائمة منسدلة للمحافظات السورية
+                else if(field.includes("المحافظة") || field.includes("محافظة")) {
+                    input = document.createElement('select');
+                    const defaultOpt = document.createElement('option');
+                    defaultOpt.value = ""; defaultOpt.innerText = "اختر المحافظة...";
+                    input.appendChild(defaultOpt);
+                    syrianGovernates.forEach(gov => {
+                        const opt = document.createElement('option');
+                        opt.value = gov; opt.innerText = gov;
+                        input.appendChild(opt);
+                    });
+                }
+                // 3. فحص حقول الرفع أو التحميل وتحويلها لزر رفع ملفات
+                else if(field.includes("رفع") || field.includes("تحميل")) {
+                    input = document.createElement('input');
+                    input.type = 'file';
+                }
+                // 4. بقية الحقول الاعتيادية (نصوص، تواريخ، نصوص طويلة)
+                else if(field.includes('ملخص') || field.includes('الأطراف') || field.includes('المصادر')) {
                     input = document.createElement('textarea');
                     input.rows = 4;
                 } else if(field.includes('تاريخ')) {
@@ -387,8 +431,10 @@
                 
                 input.className = 'form-control';
                 input.name = field;
-                // إزالة كافة الرموز والمسافات لضمان ثبات الـ ID للحقل
                 input.id = `field_${field.replace(/[^a-zA-Z0-9آ-ي]/g, '_')}`;
+                
+                // 🌟 جعل كافة الحقول إلزامية بشكل إجباري
+                input.required = true;
                 
                 group.appendChild(label);
                 group.appendChild(input);
@@ -417,7 +463,14 @@
 
             fields.forEach(field => {
                 const element = document.getElementById(`field_${field.replace(/[^a-zA-Z0-9آ-ي]/g, '_')}`);
-                if(element) { rowData[field] = element.value; }
+                if(element) { 
+                    // في حال كان الحقل ملفاً، نأخذ اسم الملف المرفوع حالياً لتوثيقه في الشيت
+                    if(element.type === 'file') {
+                        rowData[field] = element.files[0] ? element.files[0].name : "لم يتم رفع ملف";
+                    } else {
+                        rowData[field] = element.value; 
+                    }
+                }
             });
 
             const payload = {
