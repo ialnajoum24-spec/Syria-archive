@@ -320,7 +320,6 @@
             "قصص": ["اسم الباحث", "عنوان القصة", "الموضوع", "الشاهد", "التاريخ", "تحميل ملف العمل", "اسم الملف"]
         };
 
-        // قائمة الباحثين المحددة من قبلك
         const researchersList = [
             "حمد محمود الشايب", "عماد حسام الدين قباني", "محمد عاطف نموس", "يوسف صلاح الدين الشايب",
             "منصور ممدوح حسين", "حسان عصام الشايب", "محمد ملاك غياث الدين قباني", "محمد نور رياض المعرباني",
@@ -329,7 +328,6 @@
             "محمد ضياء أحمد بركات", "حازم موسى السلامة"
         ];
 
-        // قائمة المحافظات السورية
         const syrianGovernates = [
             "دمشق", "ريف دمشق", "حلب", "حمص", "حماة", "اللاذقية", "طرطوس", 
             "إدلب", "دير الزور", "الرقة", "الحسكة", "درعا", "السويداء", "القنيطرة"
@@ -388,7 +386,6 @@
                 
                 let input;
                 
-                // 1. فحص حقل الباحث / المسؤول وتحويله لقائمة منسدلة
                 if(field === "مسؤول البحث" || field === "اسم الباحث" || field === "اسم الباحث ") {
                     input = document.createElement('select');
                     const defaultOpt = document.createElement('option');
@@ -400,7 +397,6 @@
                         input.appendChild(opt);
                     });
                 } 
-                // 2. فحص حقل المحافظة وتحويله لقائمة منسدلة للمحافظات السورية
                 else if(field.includes("المحافظة") || field.includes("محافظة")) {
                     input = document.createElement('select');
                     const defaultOpt = document.createElement('option');
@@ -412,12 +408,10 @@
                         input.appendChild(opt);
                     });
                 }
-                // 3. فحص حقول الرفع أو التحميل وتحويلها لزر رفع ملفات
                 else if(field.includes("رفع") || field.includes("تحميل")) {
                     input = document.createElement('input');
                     input.type = 'file';
                 }
-                // 4. بقية الحقول الاعتيادية (نصوص، تواريخ، نصوص طويلة)
                 else if(field.includes('ملخص') || field.includes('الأطراف') || field.includes('المصادر')) {
                     input = document.createElement('textarea');
                     input.rows = 4;
@@ -433,7 +427,6 @@
                 input.name = field;
                 input.id = `field_${field.replace(/[^a-zA-Z0-9آ-ي]/g, '_')}`;
                 
-                // 🌟 جعل كافة الحقول إلزامية بشكل إجباري
                 input.required = true;
                 
                 group.appendChild(label);
@@ -464,7 +457,6 @@
             fields.forEach(field => {
                 const element = document.getElementById(`field_${field.replace(/[^a-zA-Z0-9آ-ي]/g, '_')}`);
                 if(element) { 
-                    // في حال كان الحقل ملفاً، نأخذ اسم الملف المرفوع حالياً لتوثيقه في الشيت
                     if(element.type === 'file') {
                         rowData[field] = element.files[0] ? element.files[0].name : "لم يتم رفع ملف";
                     } else {
