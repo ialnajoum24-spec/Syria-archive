@@ -303,6 +303,7 @@
     </div>
 
     <script>
+        // 🌟 تحديث الرابط بالـ Web App الجديد الخاص بك لتفعيل معالجة وحفظ الملفات
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJMSFaC6LLolz1c1ie1VWXuKdHv3CCHt8acxuaScfwyRO9cdgLUJyMbtJhv-oRJ1NG/exec";
 
         const sheetStructures = {
@@ -427,7 +428,14 @@
                 input.name = field;
                 input.id = `field_${field.replace(/[^a-zA-Z0-9آ-ي]/g, '_')}`;
                 
-                input.required = true;
+                // منع التعديل اليدوي على حقول الكود والروابط البرمجية لأن النظام يوفرها تلقائياً
+                if (field === "الكود" || field === "رابط ملف العمل" || field === "رابط الملف") {
+                    input.required = false;
+                    input.disabled = true; 
+                    input.placeholder = "سيتم توليده وحفظه تلقائياً";
+                } else {
+                    input.required = true;
+                }
                 
                 group.appendChild(label);
                 group.appendChild(input);
@@ -441,7 +449,7 @@
             alertBox.className = `alert ${isSuccess ? 'alert-success' : 'alert-error'}`;
             alertBox.classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(() => alertBox.classList.add('hidden'), 5000);
+            setTimeout(() => alertBox.classList.add('hidden'), 6000);
         }
 
         function submitFormData(e) {
@@ -454,11 +462,14 @@
                 "Email Address": currentUserEmail
             };
 
+            let fileElement = null;
+
             fields.forEach(field => {
                 const element = document.getElementById(`field_${field.replace(/[^a-zA-Z0-9آ-ي]/g, '_')}`);
                 if(element) { 
                     if(element.type === 'file') {
-                        rowData[field] = element.files[0] ? element.files[0].name : "لم يتم رفع ملف";
+                        fileElement = element;
+                        rowData[field] = "لم يتم رفع ملف"; 
                     } else {
                         rowData[field] = element.value; 
                     }
@@ -471,7 +482,27 @@
                 data: rowData
             };
 
-            showAlert("جاري ترحيل وحفظ البيانات في جدول جوجل شيت...", true);
+            // معالجة قراءة وتحويل الملف المرفق قبل توجيهه للسيرفر
+            if (fileElement && fileElement.files.length > 0) {
+                showAlert("جاري قراءة وتجهيز الملف المرفق للإرسال...", true);
+                const file = fileElement.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(evt) {
+                    payload.fileData = evt.target.result.split(',')[1]; 
+                    payload.fileName = file.name;
+                    payload.fileMimeType = file.type;
+                    
+                    sendDataToServer(payload);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                sendDataToServer(payload);
+            }
+        }
+
+        function sendDataToServer(payload) {
+            showAlert("جاري ترحيل البيانات، توليد الكود التلقائي، وإنشاء الملف في المجلد...", true);
 
             fetch(SCRIPT_URL, {
                 method: "POST",
@@ -480,15 +511,19 @@
             .then(res => res.json())
             .then(result => {
                 if(result.status === "success") {
-                    showAlert("تم حفظ البيانات بنجاح تام!");
+                    let successMessage = "تم حفظ البيانات بنجاح تام على السيرفر!";
+                    if(result.code) {
+                        successMessage += `\n الكود المولد للملف: ${result.code}`;
+                    }
+                    showAlert(successMessage, true);
                     document.getElementById('dynamicForm').reset();
                     renderDynamicForm();
                 } else {
-                    showAlert("حدث خطأ: " + result.message, false);
+                    showAlert("حدث خطأ أثناء المعالجة على الخادم: " + result.message, false);
                 }
             })
             .catch(err => {
-                showAlert("حدث خطأ أثناء الاتصال بالسيرفر، يرجى التحقق من إعدادات النشر لـ Anyone.", false);
+                showAlert("حدث خطأ في الاتصال، يرجى مراجعة إعدادات النشر لـ Web App واختيار إصدار جديد (New Version).", false);
             });
         }
 
@@ -519,7 +554,12 @@
                     response.results.forEach(item => {
                         tableHtml += `<tr><td style="font-weight:bold; color:var(--secondary-color);">${item.sheet}</td>`;
                         Object.keys(firstMatch).forEach(key => {
-                            tableHtml += `<td>${item.rowData[key] || ''}</td>`;
+                            let cellValue = item.rowData[key] || '';
+                            // تحويل روابط الـ Drive الراجعة إلى روابط تشعبية قابلة للضغط داخل جدول الاستعلام
+                            if (typeof cellValue === 'string' && (cellValue.startsWith('http://') || cellValue.startsWith('https://'))) {
+                                cellValue = `<a href="${cellValue}" target="_blank" style="color:var(--primary-color); font-weight:600; text-decoration:none;">فتح الملف 🔗</a>`;
+                            }
+                            tableHtml += `<td>${cellValue}</td>`;
                         });
                         tableHtml += `</tr>`;
                     });
@@ -532,7 +572,7 @@
             })
             .catch(err => {
                 loading.classList.add('hidden');
-                resultsArea.innerHTML = `<div style="text-align:center; padding:20px; color:var(--accent-color);">حدث خطأ أثناء الاتصال بالسيرفر.</div>`;
+                resultsArea.innerHTML = `<div style="text-align:center; padding:20px; color:var(--accent-color);">حدث خطأ في الاتصال بالخادم أثناء جلب نتائج الاستعلام.</div>`;
             });
         }
     </script>
