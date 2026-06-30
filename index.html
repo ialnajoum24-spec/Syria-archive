@@ -303,8 +303,8 @@
     </div>
 
     <script>
-        // 🌟 استبدل هذا الرابط برابط الـ Web App الفعلي بعد عمل نشر جديد (New Deployment) لسكريبت جوجل
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJMSFaC6LLolz1c1ie1VWXuKdHv3CCHt8acxuaScfwyRO9cdgLUJyMbtJhv-oRJ1NG/exec";
+        // 🌟 الرابط الجديد المفعل الخاص بك والمطابق تماماً لعمليات الحفظ
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOg5D_U8QlFQfSTrhF7_uSHUkdocBM5KuUYL8-Fe8suUxPyv4t_cl5FNE5fyCtPQRh/exec";
 
         const sheetStructures = {
             "سجل الحركة": ["مسؤول البحث", "عنوان البحث", "نوع المسار البحثي", "رابط ملف العمل", "اسم ملف العمل"],
@@ -451,7 +451,6 @@
             setTimeout(() => alertBox.classList.add('hidden'), 6000);
         }
 
-        // دالة تجميع وإرسال البيانات المحدّثة لضمان قراءة كاملة للملف المرفق
         function submitFormData(e) {
             e.preventDefault();
             const selectedSheet = document.getElementById('sheetSelector').value;
@@ -482,7 +481,6 @@
                 data: rowData
             };
 
-            // قراءة الملف بشكل آمن وصحيح 100% قبل الإرسال لتفادي فقدان البيانات بالسيرفر
             if (fileElement && fileElement.files.length > 0) {
                 showAlert("جاري قراءة وتجهيز الملف المرفق للإرسال...", true);
                 const file = fileElement.files[0];
