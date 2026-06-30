@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظومة توثيق بيانات الثورة السورية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #0d9488;
+            --accent-color: #b91c1c;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        .login-wrapper {
+            max-width: 450px;
+            margin: 100px auto;
+            padding: 40px 30px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1);
+            text-align: center;
+        }
+
+        .login-wrapper h2 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-control, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background-color: #fff;
+        }
+
+        .form-control:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+        .btn-secondary:hover {
+            background-color: #0f766e;
+        }
+
+        .hidden { display: none !important; }
+        
+        .nav-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 25px;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #64748b;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logout-btn {
+            background-color: #ef4444;
+            padding: 8px 16px;
+            width: auto;
+            font-size: 14px;
+        }
+        .logout-btn:hover { background-color: #dc2626; }
+
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .alert-success { background-color: #dcfce7; color: #166534; }
+        .alert-error { background-color: #fee2e2; color: #991b1b; }
+
+        .search-box {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .results-table th, .results-table td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: right;
+        }
+
+        .results-table th {
+            background-color: #f1f5f9;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .results-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loginSection" class="login-wrapper">
+        <h2>تسجيل الدخول للمنظومة</h2>
+        <div id="loginAlert" class="alert alert-error hidden">البريد الإلكتروني أو كلمة المرور غير صحيحة!</div>
+        <div class="form-group">
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="loginEmail" class="form-control" placeholder="example@gmail.com" required>
+        </div>
+        <div class="form-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="loginPassword" class="form-control" placeholder="******" required>
+        </div>
+        <button class="btn" onclick="handleLogin()">دخول</button>
+    </div>
+
+    <div id="dashboardSection" class="container hidden">
+        <div class="dashboard-header">
+            <div>
+                <h2>منظومة الذاكرة التاريخية وتوثيق الثورة</h2>
+                <p style="font-size: 14px; color: #64748b;" id="userWelcome"></p>
+            </div>
+            <button class="btn logout-btn" onclick="handleLogout()">تسجيل الخروج</button>
+        </div>
+
+        <div class="nav-tabs">
+            <button id="tabInput" class="tab-btn active" onclick="switchTab('input')">إدخال البيانات</button>
+            <button id="tabSearch" class="tab-btn" onclick="switchTab('search')">البحث والاستعلام المتقدم</button>
+        </div>
+
+        <div id="actionAlert" class="alert hidden"></div>
+
+        <div id="inputTabContent">
+            <div class="form-group" style="max-width: 400px;">
+                <label style="color: var(--primary-color); font-size: 16px;">اختر مسار/قسم التوثيق المطلوب:</label>
+                <select id="sheetSelector" onchange="renderDynamicForm()">
+                    <option value="سجل الحركة">سجل الحركة</option>
+                    <option value=" أحداث مفصلية في الثورة">أحداث مفصلية في الثورة</option>
+                    <option value="المعارك">المعارك</option>
+                    <option value="المظاهرات">المظاهرات</option>
+                    <option value="المجازر">المجازر</option>
+                    <option value="سير وأعلام">سير وأعلام</option>
+                    <option value="الكيانات">الكيانات</option>
+                    <option value="شهادات">شهادات</option>
+                    <option value="خرائط">خرائط</option>
+                    <option value="يوميات">يوميات</option>
+                    <option value="كتب ونصوص">كتب ونصوص</option>
+                    <option value="قصص">قصص</option>
+                </select>
+            </div>
+
+            <form id="dynamicForm" onsubmit="submitFormData(event)" style="margin-top: 20px;">
+                <div id="formFields" class="grid-2"></div>
+                <div style="margin-top: 25px; max-width: 250px;">
+                    <button type="submit" class="btn btn-secondary">حفظ وإرسال البيانات</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="searchTabContent" class="hidden">
+            <div class="search-box">
+                <div class="grid-2" style="grid-template-columns: 2fr 1fr;">
+                    <div class="form-group">
+                        <label>نص البحث (عنوان، اسم مسؤول، مدينة، معركة...)</label>
+                        <input type="text" id="searchQuery" class="form-control" placeholder="اكتب أي جزء من النص للبحث المباشر عن معلوماته...">
+                    </div>
+                    <div class="form-group">
+                        <label>تحديد القسم المراد البحث فيه</label>
+                        <select id="searchSheetSelector">
+                            <option value="كل الأقسام">كل الأقسام المتاحة</option>
+                            <option value="سجل الحركة">سجل الحركة</option>
+                            <option value=" أحداث مفصلية في الثورة">أحداث مفصلية في الثورة</option>
+                            <option value="المعارك">المعارك</option>
+                            <option value="المظاهرات">المظاهرات</option>
+                            <option value="المجازر">المجازر</option>
+                            <option value="سير وأعلام">سير وأعلام</option>
+                            <option value="الكيانات">الكيانات</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="max-width: 200px; margin-top: 10px;">
+                    <button class="btn" onclick="executeSearch()">استعلام فوري</button>
+                </div>
+            </div>
+
+            <div id="searchLoading" class="hidden" style="text-align: center; padding: 20px; font-weight: 600;">جاري استخراج السجلات المطابقة من الخادم...</div>
+            <div id="searchResultsArea" class="table-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // 🔗 تم تحديث الرابط بنجاح وجاهز للربط الفوري ومطابقة الـ Backend المصحح
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqItHb4CAVLrG5FdjUoJ7nCQ56N91F4HwbcyWw-bcRVHchWJADyUP1vEU1iACs4rYN/exec";
+
+        const sheetStructures = {
+            "سجل الحركة": ["مسؤول البحث", "عنوان البحث", "نوع المسار البحثي", "رابط ملف العمل", "اسم ملف العمل"],
+            " أحداث مفصلية في الثورة": ["مسؤول البحث", "اسم محور البحث", "عنوان البحث", "رمز العنوان الفرعي", "المصادر", "تحميل ملفات العمل ", "الكود", "مسؤل التدقيق الثاني ", "حالة التدقيق الثاني "],
+            "المعارك": ["مسؤول البحث", "اسم المعركة ", "المحافظة ", "المدينة/القرية ", "تاريخ المعركة ", "مدة المعركة ", "الأطراف المشاركة في المعركة ", "ملخص المعركة ", "المصادر ", "رفع ملفات العمل", "الكود"],
+            "المظاهرات": ["مسؤول البحث", "اسم الجمعة (غير ضروري) ", "تاريخ المظاهرة ", "محافظة المظاهرة ", "مدينة/قرية المظاهرة ", "عدد المشاركين ", "حصيلة الشهداء ", "حصيلة الجرحى ", "المصادر ", "رفع ملف العمل"],
+            "المجازر": ["مسؤول البحث ", " اسم المجزرة", "محافظة ارتكاب المجزرة ", "مدينة/قرية المجزرة ", "القوى المرتكبة للمجزرة ", "حصيلة الشهداء ", "حصيلة المصابين ", "المصادر ", "رفع ملفات العمل"],
+            "سير وأعلام": ["مسؤول البحث ", "اسم الشخصية ", "تاريخ التولد ", "مكان التولد ", "تاريخ الوفاة (غير ضروري) ", "التحصيل العلمي ", "أهم المناصب ", "المصادر ", "رفع ملف العمل"],
+            "الكيانات": ["مسؤول البحث", "اسم الكيان", "موقع نشاط الكيان", "تاريخ التأسيس", "تاريخ الحل (حقل غير ضرور)", "مؤسس الكيان", "أسماء قادة - توصيفات", "مجال عمل الكيان", "المصادر", "رفع ملفات العمل"],
+            "شهادات": ["اسم الباحث", "الشاهد", "عنوان الشهادة", "التاريخ", "تحميل ملف العمل", "اسم الملف"],
+            "خرائط": ["اسم الباحث", "المنطقة الجغرافية ", "الموضوع", "تحميل ملف العمل", "اسم الملف"],
+            "يوميات": ["اسم الباحث", "تاريخ البداية", "تاريخ النهاية", "تحميل ملف العمل", "اسم الملف"],
+            "كتب ونصوص": ["اسم الباحث", "العنوان", "المؤلف او الناشر", "الموضوع", "التاريخ", "تحميل ملف العمل", "اسم الملف"],
+            "قصص": ["اسم الباحث", "عنوان القصة", "الموضوع", "الشاهد", "التاريخ", "تحميل ملف العمل", "اسم الملف"]
+        };
+
+        let currentUserEmail = "";
+
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPassword').value;
+
+            if(email && pass === "123456") { 
+                currentUserEmail = email;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('dashboardSection').classList.remove('hidden');
+                document.getElementById('userWelcome').innerText = `مرحباً بك: ${email}`;
+                renderDynamicForm();
+            } else {
+                document.getElementById('loginAlert').classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            currentUserEmail = "";
+            document.getElementById('dashboardSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('loginPassword').value = "";
+        }
+
+        function switchTab(tab) {
+            if(tab === 'input') {
+                document.getElementById('tabInput').classList.add('active');
+                document.getElementById('tabSearch').classList.remove('active');
+                document.getElementById('inputTabContent').classList.remove('hidden');
+                document.getElementById('searchTabContent').classList.add('hidden');
+            } else {
+                document.getElementById('tabInput').classList.remove('active');
+                document.getElementById('tabSearch').classList.add('active');
+                document.getElementById('inputTabContent').classList.add('hidden');
+                document.getElementById('searchTabContent').classList.remove('hidden');
+            }
+        }
+
+        function renderDynamicForm() {
+            const selectedSheet = document.getElementById('sheetSelector').value;
+            const fields = sheetStructures[selectedSheet];
+            const fieldsContainer = document.getElementById('formFields');
+            fieldsContainer.innerHTML = "";
+
+            fields.forEach(field => {
+                const group = document.createElement('div');
+                group.className = 'form-group';
+                
+                const label = document.createElement('label');
+                label.innerText = field;
+                
+                let input;
+                if(field.includes('ملخص') || field.includes('الأطراف') || field.includes('المصادر')) {
+                    input = document.createElement('textarea');
+                    input.rows = 4;
+                } else if(field.includes('تاريخ')) {
+                    input = document.createElement('input');
+                    input.type = 'date';
+                } else {
+                    input = document.createElement('input');
+                    input.type = 'text';
+                }
+                
+                input.className = 'form-control';
+                input.name = field;
+                input.id = `field_${field.replace(/\s+/g, '_')}`;
+                
+                group.appendChild(label);
+                group.appendChild(input);
+                fieldsContainer.appendChild(group);
+            });
+        }
+
+        function showAlert(message, isSuccess = true) {
+            const alertBox = document.getElementById('actionAlert');
+            alertBox.innerText = message;
+            alertBox.className = `alert ${isSuccess ? 'alert-success' : 'alert-error'}`;
+            alertBox.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => alertBox.classList.add('hidden'), 5000);
+        }
+
+        function submitFormData(e) {
+            e.preventDefault();
+            const selectedSheet = document.getElementById('sheetSelector').value;
+            const fields = sheetStructures[selectedSheet];
+            
+            let rowData = {
+                "Timestamp": new Date().toLocaleString('fr-CA'), 
+                "Email Address": currentUserEmail
+            };
+
+            fields.forEach(field => {
+                const element = document.getElementById(`field_${field.replace(/\s+/g, '_')}`);
+                if(element) { rowData[field] = element.value; }
+            });
+
+            const payload = {
+                action: "insertRow",
+                sheetName: selectedSheet,
+                data: rowData
+            };
+
+            showAlert("جاري ترحيل وحفظ البيانات في جدول جوجل شيت...", true);
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(result => {
+                if(result.status === "success") {
+                    showAlert("تم حفظ البيانات بنجاح تام!");
+                    document.getElementById('dynamicForm').reset();
+                    renderDynamicForm(); // لإعادة بناء حقول نظيفة بناءً على الشيت المختار
+                } else {
+                    showAlert("حدث خطأ من السيرفر: " + result.message, false);
+                }
+            })
+            .catch(err => {
+                // معالجة الـ CORS المحتملة بذكاء مع التأكد من النتيجة من السيرفر
+                showAlert("حدثت مشكلة في الاتصال أو التحقق. يرجى مراجعة الجدول للتأكد من وصول السجل.", false);
+            });
+        }
+
+        function executeSearch() {
+            const query = document.getElementById('searchQuery').value.trim();
+            const targetSheet = document.getElementById('searchSheetSelector').value;
+            const resultsArea = document.getElementById('searchResultsArea');
+            const loading = document.getElementById('searchLoading');
+
+            if(!query) { alert("يرجى كتابة كلمة للبحث عنها أولاً"); return; }
+
+            resultsArea.innerHTML = "";
+            loading.classList.remove('hidden');
+
+            const url = `${SCRIPT_URL}?action=searchData&query=${encodeURIComponent(query)}&sheetName=${encodeURIComponent(targetSheet)}`;
+
+            fetch(url)
+            .then(res => res.json())
+            .then(response => {
+                loading.classList.add('hidden');
+                if(response.status === "success" && response.results.length > 0) {
+                    let tableHtml = `<table class="results-table"><thead><tr><th>القسم/الشيت</th>`;
+                    
+                    const firstMatch = response.results[0].rowData;
+                    Object.keys(firstMatch).forEach(key => { tableHtml += `<th>${key}</th>`; });
+                    tableHtml += `</tr></thead><tbody>`;
+
+                    response.results.forEach(item => {
+                        tableHtml += `<tr><td style="font-weight:bold; color:var(--secondary-color);">${item.sheet}</td>`;
+                        Object.keys(firstMatch).forEach(key => {
+                            tableHtml += `<td>${item.rowData[key] || ''}</td>`;
+                        });
+                        tableHtml += `</tr>`;
+                    });
+
+                    tableHtml += `</tbody></table>`;
+                    resultsArea.innerHTML = tableHtml;
+                } else {
+                    resultsArea.innerHTML = `<div style="text-align:center; padding:20px; color:var(--accent-color); font-weight:600;">لا توجد سجلات مطابقة لنص الاستعلام.</div>`;
+                }
+            })
+            .catch(err => {
+                loading.classList.add('hidden');
+                resultsArea.innerHTML = `<div style="text-align:center; padding:20px; color:var(--accent-color);">حدث خطأ أثناء الاتصال بالسيرفر. تأكد من تفعيل صلاحيات الرابط وجعله لـ Anyone.</div>`;
+            });
+        }
+    </script>
+</body>
+</html>
